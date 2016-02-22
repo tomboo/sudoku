@@ -76,7 +76,7 @@ def display(values):
     '''
     Display these values as a 2-D grid.
     '''
-    width = 11  # 1 + max(len(values[s]) for s in squares)
+    width = 1 + max(len(values[s]) for s in squares)
     line = '+'.join(['-' * (width * 3)] * 3)
     for r in rows:
         print(''.join(values[r + c].center(width) +
@@ -128,8 +128,10 @@ def parse_grid(grid):
 
 
 def assign(values, s, d):
-    """Eliminate all the other values (except d) from values[s] and propagate.
-    Return values, except return False if a contradiction is detected."""
+    '''
+    Eliminate all the other values (except d) from values[s] and propagate.
+    Return values, except return False if a contradiction is detected.
+    '''
     other_values = values[s].replace(d, '')
     if all(eliminate(values, s, d2) for d2 in other_values):
         return values
@@ -138,11 +140,14 @@ def assign(values, s, d):
 
 
 def eliminate(values, s, d):
-    """Eliminate d from values[s]; propagate when values or places <= 2.
-    Return values, except return False if a contradiction is detected."""
+    '''
+    Eliminate d from values[s]; propagate when values or places <= 2.
+    Return values, except return False if a contradiction is detected.
+    '''
     if d not in values[s]:
         return values  # Already eliminated
     values[s] = values[s].replace(d, '')
+
     # (1) If a square s is reduced to one value d2,
     # then eliminate d2 from the peers.
     if len(values[s]) == 0:
@@ -151,6 +156,7 @@ def eliminate(values, s, d):
         d2 = values[s]
         if not all(eliminate(values, s2, d2) for s2 in peers[s]):
             return False
+
     # (2) If a unit u is reduced to only one place for a value d,
     # then put it there.
     for u in units[s]:
@@ -164,7 +170,8 @@ def eliminate(values, s, d):
     return values
 
 
-def solve(grid): return search(parse_grid(grid))
+def solve(grid):
+    return search(parse_grid(grid))
 
 
 def search(values):
@@ -173,10 +180,9 @@ def search(values):
         return False        # Failed earlier
     if all(len(values[s]) == 1 for s in squares):
         return values       # Solved!
-    # Chose the unfilled square s with the fewest possibilities
+    # Choose the unfilled square s with the fewest possibilities
     n, s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
-    return some(search(assign(values.copy(), s, d))
-                for d in values[s])
+    return some(search(assign(values.copy(), s, d)) for d in values[s])
 
 
 def some(seq):
@@ -208,6 +214,7 @@ def test():
 
 def main():
     test()
+    display(parse_grid(grid2))
     display(solve(grid2))
 
 

@@ -34,6 +34,7 @@
 
 import time
 import random
+import re
 
 gridA = '''
     4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......
@@ -134,6 +135,9 @@ def grid_values(grid):
     # filter out all chars in grid that are not in the alphabet
     # (e.g. ' ', '|', '+', '-', '\n')
     chars = [c for c in grid if c in alphabet]
+    if len(chars) != 81:
+        print('grid:', grid)
+        print('chars:', chars)
     assert len(chars) == 81
     return dict(zip(squares, chars))
 
@@ -241,7 +245,15 @@ def from_file(filename, sep='\n'):
     '''
     Parse a file into a list of strings, separated by sep.
     '''
-    return file(filename).read().strip().split(sep)
+    # return file(filename).read().strip().split(sep)
+
+    grids = []
+    with open(filename, 'r') as f:
+        s = f.read().strip()
+        grids = re.split(sep, s)
+        # grids = filter(lambda z: len(z) > 0, grids)
+        grids = [item for item in grids if len(item) > 0]
+    return grids
 
 
 # def from_file(filename, sep='\n'):
@@ -329,6 +341,8 @@ def main():
     # solve_all(from_file("hardest.txt"), "hardest", None)
     # solve_all([random_puzzle() for _ in range(99)], "random", 100.0)
 
+    # solve_all(from_file("p096_sudoku.txt", "Grid [0-9]+"), "Project Euler", None)
+    solve_all(from_file('test.txt', '\n'), 'test', None)
 
 if __name__ == "__main__":
     # execute only if run as a script
